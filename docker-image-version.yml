@@ -1,0 +1,9 @@
+provider:
+  name: faas
+  gateway: http://127.0.0.1:8080
+
+functions:
+  docker-image-version:
+    lang: dockerfile
+    handler: .
+    image: nouchka/docker-image-version
