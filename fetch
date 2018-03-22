@@ -3,9 +3,9 @@
 set -o errexit
 
 main() {
-  check_args "$@"
-
   read image tag
+  if [ -z ${image} ]; then echo "image is unset"; exit 1; fi
+  if [ -z ${tag} ]; then echo "tag is unset"; exit 1; fi
   local token=$(get_token $image)
   local digest=$(get_digest $image $tag $token)
 
@@ -50,8 +50,9 @@ get_digest() {
     | jq -r '.config.digest'
 }
 
-check_args() {
-  echo "check arg" >> /dev/null
+usage() {
+  echo "Usage: $0 library/debian jessie"
+  exit 1
 }
 
-main "$@"
+main

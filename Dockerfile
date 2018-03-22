@@ -18,7 +18,7 @@ RUN apk --no-cache add jq curl \
     && chmod +x /usr/bin/docker-registry-inspect
 
 # Populate example here - i.e. "cat", "sha512sum" or "node index.js"
-ENV fprocess="docker-registry-inspect"
+ENV fprocess="/usr/bin/docker-registry-inspect"
 # Set to true to see request in function logs
 ENV write_debug="true"
 
