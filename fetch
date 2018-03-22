@@ -5,8 +5,7 @@ set -o errexit
 main() {
   check_args "$@"
 
-  local image=$1
-  local tag=$2
+  read image tag
   local token=$(get_token $image)
   local digest=$(get_digest $image $tag $token)
 
