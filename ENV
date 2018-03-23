@@ -1,0 +1,2 @@
+DOCKER_IMAGE=docker-image-version
+TEST_FUNC=nouchka/symfony latest

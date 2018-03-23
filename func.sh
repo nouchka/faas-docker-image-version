@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
-set -o errexit
+set -- "${1:-$(</dev/stdin)}" "${@:2}"
 
 main() {
-  read image tag
-  if [ -z ${image} ]; then echo "image is unset"; exit 1; fi
-  if [ -z ${tag} ]; then echo "tag is unset"; exit 1; fi
+  check_args "$@"
+
+  local image=$1
+  local tag=$2
   local token=$(get_token $image)
   local digest=$(get_digest $image $tag $token)
 
@@ -50,9 +51,17 @@ get_digest() {
     | jq -r '.config.digest'
 }
 
-usage() {
-  echo "Usage: $0 library/debian jessie"
-  exit 1
+check_args() {
+  if (($# != 2)); then
+    echo "Error:
+    Two arguments must be provided - $# provided.
+  
+    Usage:
+      ./get-image-config.sh <image> <tag>
+      
+Aborting."
+    exit 1
+  fi
 }
 
-main
+main $1 $2

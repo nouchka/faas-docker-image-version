@@ -1,25 +1,20 @@
-FROM alpine:3.6
-# 1. Use any image as your base image, or "scratch"
-# 2. Add fwatchdog binary via https://github.com/openfaas/faas/releases/
-# 3. Then set fprocess to the process you want to invoke per request - i.e. "cat" or "my_binary"
+FROM debian:stable-slim
 
-#ADD https://github.com/openfaas/faas/releases/download/0.7.1/fwatchdog /usr/bin
-#RUN chmod +x /usr/bin/fwatchdog
+ARG FUNC_NAME=docker-image-version
+ARG FUNC_PACKAGE=jq
 
-RUN apk --no-cache add curl \
-    && echo "Pulling watchdog binary from Github." \
-    && curl -sSL https://github.com/openfaas/faas/releases/download/0.7.6/fwatchdog > /usr/bin/fwatchdog \
-    && chmod +x /usr/bin/fwatchdog \
-    && apk del curl --no-cache
-    
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get -yq install curl ${FUNC_PACKAGE} \
+	&& echo "Pulling watchdog binary from Github." \
+	&& curl -sSL https://github.com/openfaas/faas/releases/download/0.7.6/fwatchdog > /usr/bin/fwatchdog \
+	&& chmod +x /usr/bin/fwatchdog \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-COPY fetch /usr/bin/docker-registry-inspect
-RUN apk --no-cache add jq curl \
-    && chmod +x /usr/bin/docker-registry-inspect
+##CUSTOM
+##CUSTOM
 
-# Populate example here - i.e. "cat", "sha512sum" or "node index.js"
-ENV fprocess="/usr/bin/docker-registry-inspect"
-# Set to true to see request in function logs
+COPY func.sh /usr/bin/${FUNC_NAME}
+ENV fprocess="/usr/bin/${FUNC_NAME}"
 ENV write_debug="true"
 
 HEALTHCHECK --interval=5s CMD [ -e /tmp/.lock ] || exit 1
